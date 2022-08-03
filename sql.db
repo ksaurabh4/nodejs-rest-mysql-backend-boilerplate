@@ -1,0 +1,95 @@
+CREATE DATABASE `yourdbname_db` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+
+
+-- yourdbname_db.companies definition
+
+CREATE TABLE `companies` (
+  `comp_id` int NOT NULL AUTO_INCREMENT,
+  `comp_name` varchar(255) NOT NULL,
+  `comp_address` varchar(255) DEFAULT NULL,
+  `comp_city` varchar(100) DEFAULT NULL,
+  `comp_state` varchar(100) DEFAULT NULL,
+  `comp_country` varchar(100) DEFAULT NULL,
+  `comp_zip` varchar(100) DEFAULT NULL,
+  `comp_website` varchar(255) DEFAULT NULL,
+  `comp_phone` varchar(100) DEFAULT NULL,
+  `comp_added_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `comp_email` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`comp_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- yourdbname_db.employees definition
+
+CREATE TABLE `employees` (
+  `emp_id` int NOT NULL AUTO_INCREMENT,
+  `emp_email` varchar(255) NOT NULL,
+  `emp_name` varchar(255) DEFAULT NULL,
+  `emp_adress` varchar(255) DEFAULT NULL,
+  `emp_city` varchar(255) DEFAULT NULL,
+  `emp_state` varchar(255) DEFAULT NULL,
+  `emp_country` varchar(255) DEFAULT NULL,
+  `emp_zip` varchar(255) DEFAULT NULL,
+  `emp_dept` varchar(255) DEFAULT NULL,
+  `emp_sub_dept` varchar(255) DEFAULT NULL,
+  `emp_designation` varchar(255) DEFAULT NULL,
+  `emp_is_manager` tinyint NOT NULL DEFAULT '0',
+  `emp_manager_id` int DEFAULT NULL,
+  `emp_comp_id` int NOT NULL,
+  `emp_phone` varchar(100) DEFAULT NULL,
+  `emp_code` varchar(100) DEFAULT NULL,
+  `emp_added_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`emp_id`),
+  KEY `emp_comp_id` (`emp_comp_id`),
+  KEY `emp_manager_id` (`emp_manager_id`),
+  CONSTRAINT `employees_ibfk_1` FOREIGN KEY (`emp_comp_id`) REFERENCES `companies` (`comp_id`),
+  CONSTRAINT `employees_ibfk_2` FOREIGN KEY (`emp_manager_id`) REFERENCES `employees` (`emp_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- yourdbname_db.users definition
+
+CREATE TABLE `users` (
+  `user_id` int NOT NULL AUTO_INCREMENT,
+  `user_email` varchar(255) NOT NULL,
+  `user_pswd` varchar(255) NOT NULL,
+  `user_role` varchar(255) NOT NULL DEFAULT 'user',
+  `user_comp_id` int NOT NULL,
+  `user_emp_id` int NOT NULL,
+  `user_is_admin` tinyint DEFAULT '0',
+  `user_added_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `user_is_active` tinyint DEFAULT '1',
+  PRIMARY KEY (`user_id`),
+  UNIQUE KEY `user_email` (`user_email`),
+  KEY `user_comp_id` (`user_comp_id`),
+  KEY `user_emp_id` (`user_emp_id`),
+  CONSTRAINT `users_ibfk_1` FOREIGN KEY (`user_comp_id`) REFERENCES `companies` (`comp_id`),
+  CONSTRAINT `users_ibfk_2` FOREIGN KEY (`user_emp_id`) REFERENCES `employees` (`emp_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+-- yourdbname_db.plans definition
+
+CREATE TABLE `plans` (
+  `plan_id` int NOT NULL AUTO_INCREMENT,
+  `plan_name` varchar(255) NOT NULL,
+  `plan_duration` int NOT NULL DEFAULT '1',
+  `plan_duration_unit` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'days',
+  `plan_price` double NOT NULL DEFAULT '0',
+  `plan_max_employees` int NOT NULL DEFAULT '1',
+  PRIMARY KEY (`plan_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- yourdbname_db.subscriptions definition
+
+CREATE TABLE `subscriptions` (
+  `subs_id` int NOT NULL AUTO_INCREMENT,
+  `subs_start_date` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `subs_end_date` datetime NOT NULL,
+  `subs_is_active` tinyint NOT NULL DEFAULT '1',
+  `subs_comp_id` int NOT NULL,
+  `subs_plan_id` int NOT NULL DEFAULT '1',
+  PRIMARY KEY (`subs_id`),
+  KEY `subs_comp_id` (`subs_comp_id`),
+  KEY `subs_plan_id` (`subs_plan_id`),
+  CONSTRAINT `subscriptions_ibfk_1` FOREIGN KEY (`subs_comp_id`) REFERENCES `companies` (`comp_id`),
+  CONSTRAINT `subscriptions_ibfk_2` FOREIGN KEY (`subs_plan_id`) REFERENCES `plans` (`plan_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
